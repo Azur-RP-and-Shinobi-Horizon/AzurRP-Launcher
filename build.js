@@ -69,10 +69,10 @@ class Index {
         builder.build({
             config: {
                 generateUpdatesFilesForAllChannels: false,
-                appId: preductname,
-                productName: preductname,
-                copyright: 'Copyright © 2020-2025 Riptiaz',
-                artifactName: "${productName}-${os}-${arch}.${ext}",
+                appId: "AzurRP-Launcher",
+                productName: "AzurRP Launcher",
+                copyright: 'Copyright © 2026 Azur Team',
+                artifactName: "AzurRP-Launcher-${os}-${arch}.${ext}",
                 extraMetadata: { main: 'app/app.js' },
                 files: ["app/**/*", "package.json", "LICENSE.md"],
                 directories: { "output": "dist" },
@@ -90,8 +90,8 @@ class Index {
                     }]
                 },
                 nsis: {
-                    oneClick: true,
-                    allowToChangeInstallationDirectory: false,
+                    oneClick: false,
+                    allowToChangeInstallationDirectory: true,
                     createDesktopShortcut: true,
                     runAfterFinish: true
                 },
@@ -109,9 +109,14 @@ class Index {
                     }]
                 },
                 linux: {
+                    maintainer: "Azur Team <contact@azur-rp.eu>",
                     icon: "./app/assets/images/icon.png",
                     target: [{
                         target: "AppImage",
+                        arch: "x64"
+                    },
+                    {
+                        target: "deb",
                         arch: "x64"
                     }]
                 }
