@@ -1,5 +1,6 @@
 # module du helios launcher
 name: Launcher Build
+
 on:
   push:
     branches: [ master ]
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get version
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_ENV
@@ -24,7 +25,7 @@ jobs:
           release_name: release ${{ env.version }}
           draft: false
           prerelease: ${{ contains(env.version, 'beta') || contains(env.version, 'alpha') }}
-
+          
   build-launcher:
     needs: create-release
     runs-on: ${{ matrix.os }}
@@ -35,24 +36,31 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22
-
+        uses: actions/checkout@v4
+      
+      # ✅ Python requis pour node-gyp / modules natifs
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.x
 
+      # ✅ Node LTS compatible Electron
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # ✅ Installation stable des dépendances
       - name: Install Dependencies
-        run: npm ci
-        shell: bash
+        run: |
+          npm config set fetch-retry-maxtimeout 600000
+          npm config set fetch-retries 5
+          npm ci
+        env:
+          ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
 
       - name: Build
         env:
-          GH_TOKEN: ${{ secrets.github_token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build
-        shell: bash
